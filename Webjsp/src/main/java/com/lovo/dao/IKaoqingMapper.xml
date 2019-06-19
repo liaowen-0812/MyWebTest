@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lovo.dao.IKaoqingDao">
+
+    <select id="findStuBuStuName"  resultMap="StudentMap" >
+        SELECT * FROM sys_student where sys_stuName = #{0}
+    </select>
+
+    <insert id="insertKaoqing" parameterType="com.lovo.bean.SysKaoqing"  useGeneratedKeys="true" keyProperty="sys_kqId">
+        insert into sys_kaoqing(sys_stuId, sys_type, sys_time, sys_man, sys_insertTime)
+        values (#{sysStu.sysStuId},#{sysType},#{sysTime},#{sysMan},#{sysInsertTime});
+    </insert>
+    <resultMap id="KaoqingMap" type="com.lovo.bean.SysKaoqing">
+        <id column="sys_kqId" property="sysKqId"></id>
+        <result column="sys_type" property="sysType"></result>
+        <result column="sys_time" property="sysTime"></result>
+        <result column="sys_man" property="sysMan"></result>
+        <result column="sys_insertTime" property="sysInsertTime"></result>
+        <association property="sysStu" column="sys_stuId" resultMap="StudentMap"></association>
+    </resultMap>
+
+
+    <resultMap id="StudentMap" type="com.lovo.bean.SysStudent">
+        <id property="sysStuId" column="sys_stuId"></id>
+        <result property="sysStuName" column="sys_stuName"></result>
+        <result property="sysStuUserName" column="sys_stuUserName"></result>
+        <result property="sysStuPwd" column="sys_stuPwd"></result>
+    </resultMap>
+
+    <select id="findAllKaoqing" resultMap="KaoqingMap">
+        select * from sys_kaoqing join sys_student ss on sys_kaoqing.sys_stuId = ss.sys_stuId
+        <where>
+
+            <if test="name!=null and name != ''.toString()">
+                and sys_stuName like '%${name}%'
+            </if>
+        </where>
+        limit ${startPage},${countPage}
+    </select>
+
+    <select id="findAllKaoqingNum" resultType="Integer" >
+        select count(sys_kqId) from sys_kaoqing join sys_student ss on sys_kaoqing.sys_stuId = ss.sys_stuId
+        <where>
+
+            <if test="name!=null and name != ''.toString()">
+                and sys_stuName like '%${name}%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertFileInfo" parameterType="String">
+        insert into fileimg(fileName) values (#{0});
+    </insert>
+    <select id="findAllName" resultType="com.lovo.bean.fileBean">
+      select * from fileimg
+    </select>
+</mapper>
